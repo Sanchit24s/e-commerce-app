@@ -4,6 +4,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const userRoutes = require('./routes/userRoutes');
+const productRoutes = require('./routes/productRoutes');
 const cookieParser = require('cookie-parser');
 const cloudinary = require('cloudinary');
 
@@ -25,6 +26,7 @@ app.use(cors());
 app.use(cookieParser());
 
 app.use('/api/v1/user', userRoutes);
+app.use('/api/v1/product', productRoutes);
 
 app.get('/', (req, res) => {
     return res.status(200).send("<h1>Welcome to Node Server</h1>");
