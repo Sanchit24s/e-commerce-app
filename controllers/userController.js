@@ -73,9 +73,18 @@ const loginController = async (req, res) => {
             });
         }
 
-        res.status(200).send({
+        const token = user.generateToken();
+
+        res.status(200).cookie("token", token, {
+            expires: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
+            secure: process.env.NODE_ENV === 'development' ? true : false,
+            httpOnly: process.env.NODE_ENV === 'development' ? true : false,
+            sameSite: process.env.NODE_ENV === 'development' ? true : false
+        }).send({
             success: true,
-            message: 'Login Successful'
+            message: 'Login Successful',
+            token,
+            user
         });
     } catch (error) {
         console.log(error);
