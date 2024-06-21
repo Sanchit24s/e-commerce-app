@@ -137,4 +137,70 @@ const logoutController = async (req, res) => {
     }
 };
 
-module.exports = { registerController, loginController, getUserProfileController, logoutController };
+const updateProfileController = async (req, res) => {
+    try {
+        const user = await userModel.findById(req.user._id);
+        const { name, email, address, city, country, phone } = req.body;
+
+        if (name) user.name = name;
+        if (email) user.name = email;
+        if (address) user.name = address;
+        if (city) user.name = city;
+        if (country) user.name = country;
+        if (phone) user.name = phone;
+
+        await user.save();
+        res.status(200).send({
+            success: true,
+            message: 'User Profile Updated Successfully!'
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({
+            success: false,
+            message: 'Error in Update Profile API',
+            error
+        });
+    }
+};
+
+const updatePasswordController = async (req, res) => {
+    try {
+        const user = await userModel.findById(req.user._id);
+
+        const { oldPassword, newPassword } = req.body;
+
+        if (!oldPassword || !newPassword) {
+            return res.status(500).send({
+                success: false,
+                message: 'Please provide old or new password'
+            });
+        }
+
+        const isMatch = await user.comparePassword(oldPassword);
+
+        if (!isMatch) {
+            return res.status(500).send({
+                success: false,
+                message: 'Invalid Old Password'
+            });
+        }
+
+        user.password = newPassword;
+        await user.save();
+
+        res.status(200).send({
+            success: true,
+            message: 'Password Updated Successfully!'
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({
+            success: false,
+            message: 'Error in Update Password API',
+            error
+        });
+    }
+};
+
+module.exports = { registerController, loginController, getUserProfileController, logoutController, updateProfileController, updatePasswordController };
