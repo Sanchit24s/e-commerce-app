@@ -95,4 +95,93 @@ const createProductController = async (req, res) => {
     }
 };
 
-module.exports = { getAllProductsController, getSingleProductController, createProductController };
+const updateProductController = async (req, res) => {
+    try {
+        const product = await productModel.findById(req.params.id);
+        if (!product) {
+            return res.status(404).send({
+                success: false,
+                message: 'Product Not Found'
+            });
+        }
+
+        const { name, description, category, price, stock } = req.body;
+
+        if (name) product.name = name;
+        if (description) product.description = description;
+        if (category) product.category = category;
+        if (price) product.price = price;
+        if (stock) product.stock = stock;
+
+        await product.save();
+
+        res.status(200).send({
+            success: true,
+            message: 'Product Updated Successfully!'
+        });
+    } catch (error) {
+        if (error.name === 'CastError') {
+            return res.status(500).send({
+                success: false,
+                message: 'Invalid ID'
+            });
+        }
+        console.log(error);
+        res.status(500).send({
+            success: false,
+            message: 'Error in Create Product API',
+            error
+        });
+    }
+};
+
+const updateProductImageController = async (req, res) => {
+    try {
+        const product = await productModel.findById(req.params.id);
+        if (!product) {
+            return res.status(404).send({
+                success: false,
+                message: 'Product Not Found'
+            });
+        }
+
+        if (!req.file) {
+            return res.status(500).send({
+                success: false,
+                message: 'Please provide product images'
+            });
+        }
+
+        const file = getDataUri(req.file);
+        const cdb = await cloudinary.v2.uploader.upload(file.content);
+        const image = {
+            public_id: cdb.public_id,
+            url: cdb.secure_url
+        };
+
+        product.images.push(image);
+        await product.save();
+        res.status(200).send({
+            success: true,
+            message: 'Product Image Updated Successfully'
+        });
+    } catch (error) {
+        if (error.name === 'CastError') {
+            return res.status(500).send({
+                success: false,
+                message: 'Invalid ID'
+            });
+        }
+        console.log(error);
+        res.status(500).send({
+            success: false,
+            message: 'Error in Create Product API',
+            error
+        });
+    }
+};
+
+module.exports = {
+    getAllProductsController, getSingleProductController, createProductController,
+    updateProductController, updateProductImageController
+};

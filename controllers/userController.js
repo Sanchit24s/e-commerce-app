@@ -145,11 +145,11 @@ const updateProfileController = async (req, res) => {
         const { name, email, address, city, country, phone } = req.body;
 
         if (name) user.name = name;
-        if (email) user.name = email;
-        if (address) user.name = address;
-        if (city) user.name = city;
-        if (country) user.name = country;
-        if (phone) user.name = phone;
+        if (email) user.email = email;
+        if (address) user.address = address;
+        if (city) user.city = city;
+        if (country) user.country = country;
+        if (phone) user.phone = phone;
 
         await user.save();
         res.status(200).send({
