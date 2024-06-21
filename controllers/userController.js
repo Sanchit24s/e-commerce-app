@@ -96,4 +96,45 @@ const loginController = async (req, res) => {
     }
 };
 
-module.exports = { registerController, loginController };
+const getUserProfileController = async (req, res) => {
+    try {
+        const user = await userModel.findById(req.user._id);
+        user.password = undefined;
+
+        res.status(200).send({
+            success: true,
+            message: 'User Profile Fetched Successfully!',
+            user
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({
+            success: false,
+            message: 'Error in Get User Profile API',
+            error
+        });
+    }
+};
+
+const logoutController = async (req, res) => {
+    try {
+        res.status(200).cookie("token", "", {
+            expires: new Date(Date.now()),
+            secure: process.env.NODE_ENV === 'development' ? true : false,
+            httpOnly: process.env.NODE_ENV === 'development' ? true : false,
+            sameSite: process.env.NODE_ENV === 'development' ? true : false
+        }).send({
+            success: true,
+            message: 'Logout Successfully'
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({
+            success: false,
+            message: 'Error in Logout API',
+            error
+        });
+    }
+};
+
+module.exports = { registerController, loginController, getUserProfileController, logoutController };
