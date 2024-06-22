@@ -1,6 +1,8 @@
 const express = require('express');
 const { getAllProductsController, getSingleProductController, createProductController,
-    updateProductController, updateProductImageController } = require('../controllers/productController');
+    updateProductController, updateProductImageController,
+    deleteProductImageController,
+    deleteProductController } = require('../controllers/productController');
 const isAuth = require('../middlewares/authMiddleware');
 const singleUpload = require('../middlewares/multer');
 
@@ -15,5 +17,9 @@ router.post('/create', isAuth, singleUpload, createProductController);
 router.put('/:id', isAuth, updateProductController);
 
 router.put('/image/:id', isAuth, singleUpload, updateProductImageController);
+
+router.delete('/delete-image/:id', isAuth, deleteProductImageController);
+
+router.delete('/delete/:id', isAuth, deleteProductController);
 
 module.exports = router;

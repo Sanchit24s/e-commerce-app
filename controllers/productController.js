@@ -181,7 +181,97 @@ const updateProductImageController = async (req, res) => {
     }
 };
 
+const deleteProductImageController = async (req, res) => {
+    try {
+        const product = await productModel.findById(req.params.id);
+        if (!product) {
+            return res.status(404).send({
+                success: false,
+                message: 'Product Not Found'
+            });
+        }
+
+        const id = req.query.id;
+        if (!id) {
+            return res.status(404).send({
+                success: false,
+                message: 'Product Image Not Found'
+            });
+        }
+
+        let isExist = -1;
+        product.images.forEach((item, index) => {
+            if (item._id.toString() === id.toString()) isExist = index;
+        });
+
+        if (isExist < 0) {
+            return res.status(404).send({
+                success: false,
+                message: "Image Not Found",
+            });
+        }
+
+        await cloudinary.v2.uploader.destroy(product.images[isExist].public_id);
+        product.images.splice(isExist, 1);
+        await product.save();
+
+        res.status(200).send({
+            success: true,
+            message: 'Product Image Deleted Successfully'
+        });
+    } catch (error) {
+        if (error.name === 'CastError') {
+            return res.status(500).send({
+                success: false,
+                message: 'Invalid ID'
+            });
+        }
+        console.log(error);
+        res.status(500).send({
+            success: false,
+            message: 'Error in Delete Product Image API',
+            error
+        });
+    }
+};
+
+const deleteProductController = async (req, res) => {
+    try {
+        const product = await productModel.findById(req.params.id);
+        if (!product) {
+            return res.status(404).send({
+                success: false,
+                message: 'Product Not Found'
+            });
+        }
+
+        for (let index = 0; index < product.images.length; index++) {
+            await cloudinary.v2.uploader.destroy(product.images[index].public_id);
+        }
+
+        await product.deleteOne();
+        res.status(200).send({
+            success: true,
+            message: "Product Deleted Successfully",
+        });
+    } catch (error) {
+        if (error.name === 'CastError') {
+            return res.status(500).send({
+                success: false,
+                message: 'Invalid ID'
+            });
+        }
+        console.log(error);
+        res.status(500).send({
+            success: false,
+            message: 'Error in Delete Product Image API',
+            error
+        });
+    }
+};
+
 module.exports = {
     getAllProductsController, getSingleProductController, createProductController,
-    updateProductController, updateProductImageController
+    updateProductController, updateProductImageController, deleteProductImageController,
+    deleteProductController
 };
