@@ -5,6 +5,7 @@ const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const userRoutes = require('./routes/userRoutes');
 const productRoutes = require('./routes/productRoutes');
+const categoryRoutes = require('./routes/categoryRoutes');
 const cookieParser = require('cookie-parser');
 const cloudinary = require('cloudinary');
 
@@ -27,6 +28,7 @@ app.use(cookieParser());
 
 app.use('/api/v1/user', userRoutes);
 app.use('/api/v1/product', productRoutes);
+app.use('/api/v1/category', categoryRoutes);
 
 app.get('/', (req, res) => {
     return res.status(200).send("<h1>Welcome to Node Server</h1>");
