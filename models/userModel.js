@@ -40,7 +40,11 @@ const userSchema = new mongoose.Schema({
         url: {
             type: String,
         }
-    }
+    },
+    role: {
+        type: String,
+        default: "user",
+    },
 }, { timestamps: true });
 
 userSchema.pre('save', async function (next) {

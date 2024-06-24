@@ -1,7 +1,7 @@
 const express = require('express');
 const { registerController, loginController, getUserProfileController, logoutController,
     updateProfileController, updatePasswordController, updateProfilePicController } = require('../controllers/userController');
-const isAuth = require('../middlewares/authMiddleware');
+const { isAuth } = require('../middlewares/authMiddleware');
 const singleUpload = require('../middlewares/multer');
 
 const router = express.Router();

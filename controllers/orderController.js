@@ -154,4 +154,70 @@ const paymentsController = async (req, res) => {
     }
 };
 
-module.exports = { createOrderController, getMyOrdersController, singleOrderDetailsController, paymentsController };
+// ===============ADMIN CONTROLLERS================
+const getAllOrdersController = async (req, res) => {
+    try {
+        const orders = await orderModel.find({});
+        res.status(200).send({
+            success: true,
+            message: 'All orders fetched successfully!',
+            totalOrders: orders.length,
+            orders
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({
+            success: false,
+            message: "Error In Get All Orders API",
+            error,
+        });
+    }
+};
+
+const changeOrderStatusController = async (req, res) => {
+    try {
+        const order = await orderModel.findById(req.params.id);
+        if (!order) {
+            return res.status(404).send({
+                success: false,
+                message: 'Order Not Found'
+            });
+        }
+
+        if (order.orderStatus === 'processing') order.orderStatus = 'shipped';
+        else if (order.orderStatus === 'shipped') {
+            order.orderStatus = 'deliverd';
+            order.deliverdAt = Date.now();
+        } else {
+            return res.status(500).send({
+                success: false,
+                message: 'Order Already Delivered'
+            });
+        }
+        await order.save();
+        res.status(200).send({
+            success: true,
+            message: 'Order Status Updated Successfully!'
+        });
+    } catch (error) {
+        console.log(error);
+        // cast error ||  OBJECT ID
+        if (error.name === "CastError") {
+            return res.status(500).send({
+                success: false,
+                message: "Invalid Id",
+            });
+        }
+        res.status(500).send({
+            success: false,
+            message: "Error In Get UPDATE Products API",
+            error,
+        });
+    }
+};
+
+module.exports = {
+    createOrderController, getMyOrdersController,
+    singleOrderDetailsController, paymentsController, getAllOrdersController,
+    changeOrderStatusController
+};
