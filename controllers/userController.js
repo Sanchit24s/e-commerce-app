@@ -4,9 +4,9 @@ const cloudinary = require('cloudinary');
 
 const registerController = async (req, res) => {
     try {
-        const { name, email, password, phone, address, city, country } = req.body;
+        const { name, email, password, phone, address, city, country, answer } = req.body;
 
-        if (!name || !email || !password || !phone || !address || !city || !country) {
+        if (!name || !email || !password || !phone || !address || !city || !country || !answer) {
             return res.status(500).send({
                 success: false,
                 message: 'Please Provide All Fields'
@@ -29,7 +29,8 @@ const registerController = async (req, res) => {
             phone,
             address,
             city,
-            country
+            country,
+            answer
         });
 
         res.status(201).send({
@@ -232,7 +233,44 @@ const updateProfilePicController = async (req, res) => {
     }
 };
 
+const passwordResetController = async (req, res) => {
+    try {
+        const { email, newPassword, answer } = req.body;
+
+        if (!email || !newPassword || !answer) {
+            return res.status(500).send({
+                success: false,
+                message: 'Please provide all fields'
+            });
+        }
+
+        const user = await userModel.findOne({ email, answer });
+        if (!user) {
+            return res.status(404).send({
+                success: false,
+                message: 'Invalid User or Answer'
+            });
+        }
+
+        user.password = newPassword;
+        await user.save();
+        res.status(200).send({
+            success: true,
+            message: 'Password reset successfully. Please login again!!'
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({
+            success: false,
+            message: 'Error in Password Reset API',
+            error
+        });
+    }
+};
+
 module.exports = {
     registerController, loginController, getUserProfileController,
-    logoutController, updateProfileController, updatePasswordController, updateProfilePicController
+    logoutController, updateProfileController, updatePasswordController, updateProfilePicController,
+    passwordResetController
 };

@@ -1,6 +1,7 @@
 const express = require('express');
 const { registerController, loginController, getUserProfileController, logoutController,
-    updateProfileController, updatePasswordController, updateProfilePicController } = require('../controllers/userController');
+    updateProfileController, updatePasswordController, updateProfilePicController,
+    passwordResetController } = require('../controllers/userController');
 const { isAuth } = require('../middlewares/authMiddleware');
 const singleUpload = require('../middlewares/multer');
 
@@ -19,5 +20,7 @@ router.put('/profile-update', isAuth, updateProfileController);
 router.put('/update-password', isAuth, updatePasswordController);
 
 router.put('/update-picture', isAuth, singleUpload, updateProfilePicController);
+
+router.post('/reset-password', passwordResetController);
 
 module.exports = router;
