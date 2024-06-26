@@ -3,11 +3,19 @@ const getDataUri = require("../utils/features");
 const cloudinary = require('cloudinary');
 
 const getAllProductsController = async (req, res) => {
+    const { keyword, category } = req.query;
     try {
-        const products = await productModel.find({});
+        const products = await productModel.find({
+            name: {
+                $regex: keyword ? keyword : '',
+                $options: 'i'
+            },
+            // category: category ? category : undefined
+        }).populate('category');
         res.status(200).send({
             success: true,
             message: 'All products fetched successfully',
+            totalProducts: products.length,
             products
         });
     } catch (error) {
@@ -15,6 +23,24 @@ const getAllProductsController = async (req, res) => {
         res.status(500).send({
             success: false,
             message: 'Error in Get All API',
+            error
+        });
+    }
+};
+
+const getTopProductController = async (req, res) => {
+    try {
+        const products = await productModel.find().sort({ rating: -1 }).limit(3);
+        res.status(200).send({
+            success: true,
+            message: 'Top 3 Products',
+            products
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({
+            success: false,
+            message: 'Error in Get Top Products API',
             error
         });
     }
@@ -321,5 +347,5 @@ const productReviewController = async (req, res) => {
 module.exports = {
     getAllProductsController, getSingleProductController, createProductController,
     updateProductController, updateProductImageController, deleteProductImageController,
-    deleteProductController, productReviewController
+    deleteProductController, productReviewController, getTopProductController
 };
