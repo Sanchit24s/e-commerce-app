@@ -1,5 +1,26 @@
 const mongoose = require('mongoose');
 
+const reviewSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: [true, "name is require"],
+    },
+    rating: {
+        type: Number,
+        default: 0,
+    },
+    comment: {
+        type: String,
+    },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Users",
+        required: [true, "user require"],
+    },
+},
+    { timestamps: true }
+);
+
 const productSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -26,7 +47,16 @@ const productSchema = new mongoose.Schema({
             public_id: String,
             url: String
         }
-    ]
+    ],
+    reviews: [reviewSchema],
+    rating: {
+        type: Number,
+        default: 0,
+    },
+    numReviews: {
+        type: Number,
+        default: 0,
+    },
 }, { timestamps: true });
 
 const productModel = mongoose.model("Products", productSchema);

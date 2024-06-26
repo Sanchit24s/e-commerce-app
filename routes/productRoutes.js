@@ -2,7 +2,8 @@ const express = require('express');
 const { getAllProductsController, getSingleProductController, createProductController,
     updateProductController, updateProductImageController,
     deleteProductImageController,
-    deleteProductController } = require('../controllers/productController');
+    deleteProductController,
+    productReviewController } = require('../controllers/productController');
 const { isAuth, isAdmin } = require('../middlewares/authMiddleware');
 const singleUpload = require('../middlewares/multer');
 
@@ -21,5 +22,8 @@ router.put('/image/:id', isAuth, isAdmin, singleUpload, updateProductImageContro
 router.delete('/delete-image/:id', isAuth, isAdmin, deleteProductImageController);
 
 router.delete('/delete/:id', isAuth, isAdmin, deleteProductController);
+
+// Review Product
+router.put('/:id/review', isAuth, productReviewController);
 
 module.exports = router;
