@@ -9,6 +9,8 @@ const categoryRoutes = require('./routes/categoryRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const cookieParser = require('cookie-parser');
 const cloudinary = require('cloudinary');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
 
 dotenv.config();
 
@@ -22,6 +24,8 @@ cloudinary.v2.config({
 
 const app = express();
 
+app.use(helmet());
+app.use(mongoSanitize());
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(cors());
